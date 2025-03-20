@@ -20,7 +20,11 @@ contribution by jihoonkimtech. <br/>
 
 ## Gyro
 *Source code for Gyro to check values on Serial plotter*
-> Source is located in /Gyro
+> Source is located in /Gyro <br/>
+
+### gyro testing code in gyro_test folder <br/>
+
+### gyro calibration code in gyro_calibration folder
 
 <br/><br/>
 
