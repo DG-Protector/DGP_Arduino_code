@@ -11,12 +11,12 @@ Servo L_SERVO;          // object of Servo class
 Servo R_SERVO;
 
 #define L_SV_PIN 10   // servo motors
-#define R_SV_PIN 10
+#define R_SV_PIN 11
 #define L_SS_PIN 7    // sensors
 #define R_SS_PIN 6
 
-#define SERVO_FRWD 110  // rotate clockwise servo
-#define SERVO_BKWD 70   // rotate anti-clockwise servo
+#define SERVO_FRWD 100  // rotate clockwise servo
+#define SERVO_BKWD 60   // rotate anti-clockwise servo
 #define SERVO_STOP 90   // stop rotate servo
 
 void setup() {
@@ -29,22 +29,33 @@ void setup() {
   R_SERVO.attach(R_SV_PIN);
   L_SERVO.write(SERVO_STOP);  // stop servo
   R_SERVO.write(SERVO_STOP);
+  /*
+delay(500);
+L_SERVO.write(SERVO_BKWD);  // stop servo
+  R_SERVO.write(SERVO_BKWD);
+delay(500);
+  L_SERVO.write(SERVO_STOP);  // stop servo
+  R_SERVO.write(SERVO_STOP);*/
+
   servo_init();
 }
 
 void loop() {
   if(Serial.available()){
     int tmp = Serial.parseInt();
+    Serial.println("Start=====");
     band_winding(tmp);
+    Serial.println("End=====");
+    tmp = Serial.parseInt();
   }
   
 }
 
 bool _checkSensor(int pin){
   bool prev = digitalRead(pin);  // check value
-  delay(50);
+  delay(20);
   bool next = digitalRead(pin);
-  delay(50);
+  delay(20);
   bool now = digitalRead(pin);
   
   if(prev == next == now)       // read value check
@@ -54,14 +65,14 @@ bool _checkSensor(int pin){
 }
 
 void servo_init() {       // initializing servo motor (find line)
-  if(_checkSensor(L_SS_PIN));
+  if(_checkSensor(L_SS_PIN)){;}
   else {
     L_SERVO.write(SERVO_BKWD);         // servo rotate
     while(!_checkSensor(L_SS_PIN));    // break if it's initialized
     L_SERVO.write(SERVO_STOP);
   }
 
-  if(_checkSensor(R_SS_PIN));
+  if(_checkSensor(R_SS_PIN)){;}
   else {
     R_SERVO.write(SERVO_FRWD); 
     while(!_checkSensor(R_SS_PIN));
@@ -84,7 +95,7 @@ void band_winding(int num) {   // choice wind or unwind
 void band_wind(int num){            // winding band
   for(int x = 0; x < num; x++){
     for(int i = 0; i < 4; i++) {
-      L_SERVO.write(SERVO_FRWD);
+      L_SERVO.write(SERVO_BKWD);
       while(_checkSensor(L_SS_PIN)); // rotation until out of line
       L_SERVO.write(SERVO_STOP);
 
@@ -92,7 +103,7 @@ void band_wind(int num){            // winding band
       while(_checkSensor(R_SS_PIN)); // rotation until out of line
       R_SERVO.write(SERVO_STOP);
 
-      L_SERVO.write(SERVO_FRWD);
+      L_SERVO.write(SERVO_BKWD);
       while(!_checkSensor(L_SS_PIN)); // rotation until entering the line 
       L_SERVO.write(SERVO_STOP);
 
@@ -106,9 +117,10 @@ void band_wind(int num){            // winding band
 }
 
 void band_unwind(int num){            // unwinding band
+num *= -1;
   for(int x = 0; x < num; x++){
     for(int i = 0; i < 4; i++) {
-      L_SERVO.write(SERVO_BKWD);
+      L_SERVO.write(SERVO_FRWD);
       while(_checkSensor(L_SS_PIN)); // rotation until out of line
       L_SERVO.write(SERVO_STOP);
 
@@ -116,7 +128,7 @@ void band_unwind(int num){            // unwinding band
       while(_checkSensor(R_SS_PIN)); // rotation until out of line
       R_SERVO.write(SERVO_STOP);
 
-      L_SERVO.write(SERVO_BKWD);
+      L_SERVO.write(SERVO_FRWD);
       while(!_checkSensor(L_SS_PIN)); // rotation until entering the line 
       L_SERVO.write(SERVO_STOP);
 
