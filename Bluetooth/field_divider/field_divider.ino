@@ -1,5 +1,5 @@
 /*
- * field divider for Serial
+ * field divider
  *
  * written by jihoonkimtech
  *
@@ -38,7 +38,7 @@ void loop() {
   if(Serial.available()){             // if available serial comm
     String cmd = Serial.readString();
     F = extractField(cmd);
-    printField(F);
+    printSerialField(F);
   }
 }
 
@@ -82,7 +82,7 @@ struct Fields extractField(String str){
 }
 
 // print fields for debug
-void printField(struct Fields f){
+void printSerialField(struct Fields f){
   Serial.println("=====start=====");
   Serial.print("op : ");
   Serial.println(f.op);
