@@ -3,32 +3,39 @@
 <br/><br/>
 
 contribution by jihoonkimtech. <br/>
-*last updated at 03/02.*
+*last updated at 03/28.*
 <br/><br/>
 
-## ESP32_Bluetooth
-*Source code for testing Bluetooth communication using ESP32*
-> Source is located in /ESP32_Blutooth
+## Main Source
+### DGP_Arduino_code
+> main source
 
-<br/><br/>
+<br/>
 
-## FSR
-*Source code for FSR to check values on Serial plotter*
-> Source is located in /FSR
+### DGP Library
+#### DGP_Gyro
+> Function set of Gyro
 
-<br/><br/>
+#### DGP_Servo
+> Function set of Servo
 
-## Gyro
+#### DGP_Fields
+> Extract fields from transferred data
+
+<br/>
+
+## Testcodes
+### Gyro
 *Source code for Gyro to check values on Serial plotter*
 > Source is located in /Gyro <br/>
 
-### gyro testing code in gyro_test folder <br/>
+> gyro testing code in /gyro_test folder <br/>
 
-### gyro calibration code in gyro_calibration folder
+> gyro calibration code in gyro_calibration folder
 
 <br/><br/>
 
-## Servo
+### Servo
 *Source code for testing Servo moter rotating at 360 degree*
 > Source is located in /Servo
 
