@@ -246,6 +246,9 @@ void DGP_Servo::unwinding(){                        // unwinding
         if(rotateOneStep(R, CCW))
             howManyWind[R]--;
     }
+
+    servo[L].write(SERVO_STP);
+    servo[R].write(SERVO_STP);
 }
 
 void DGP_Servo::printSerialRefs(){                  // for debug
