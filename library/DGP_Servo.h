@@ -72,4 +72,29 @@ DGP_Servo::DGP_Servo(   uint8_t l_servo_pin=0, uint8_t l_sensor_pin=0,      // i
     pinMode(r_sensor_pin, INPUT);
 }
 
+void DGP_Servo::setMaleRef(uint8_t arr[2][3]){      // set male's motor power reference
+    malesPower[CW][L] = arr[CW][L];
+    malesPower[CCW][L] = arr[CCW][L];
+
+    malesPower[CW][M] = arr[CW][M];
+    malesPower[CCW][M] = arr[CCW][M];
+
+    malesPower[CW][H] = arr[CW][H];
+    malesPower[CCW][H] = arr[CCW][H];
+    
+    return;
+}
+
+void DGP_Servo::setFemaleRef(uint8_t arr[2][3]){    // set female's motor power reference
+    femalesPower[CW][L] = arr[CW][L];
+    femalesPower[CCW][L] = arr[CCW][L];
+
+    femalesPower[CW][M] = arr[CW][M];
+    femalesPower[CCW][M] = arr[CCW][M];
+
+    femalesPower[CW][H] = arr[CW][H];
+    femalesPower[CCW][H] = arr[CCW][H];
+    
+    return;
+}
 #endif
