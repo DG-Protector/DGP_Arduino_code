@@ -44,21 +44,22 @@ bool devMod = true;       // toggle debug mode, if false = off
 DGP_Fields  fields;                     // fields info
 DGP_Servo   servo(SERVO_L, SENSOR_L, 
                   SERVO_R, SENSOR_R );  // for band winding 
+DGP_Gyro    gyro(GYRO_SDA, GYRO_SCL);   // for gyro sensing
 SoftwareSerial btSerial (BT_TX, BT_RX); // software serial for bluetooth
 
 void setup() {
   if(devMod) Serial.begin(9600);  // for debug: serial start
   btSerial.begin(9600);           // bluetooth comm start
-
+  servo.init();
   servo.setMaleRef(M_speeds);     // set male's motor power reference
   servo.setFemaleRef(FM_speeds);  // set female's motor power reference
-  servo.printSerialRefs();
+  gyro.init();                    // initializing gyro
 }
 
 void loop() {
-  if(btSerial.available()){                 // if the data came in via bluetooth
+  if(Serial.available()){                 // if the data came in via bluetooth
     String bufStr = "";                     // initialize buffer string                      
-    bufStr = btSerial.readStringUntil('.'); // read chars until came '.'(eof)
+    bufStr = Serial.readStringUntil('.'); // read chars until came '.'(eof)
     if(bufStr.charAt(0) != 'e'){              // 'e' is unwind
       fields.extractField(bufStr);            // extract fields from string
       if(devMod) fields.printSerialField();   // for debug: display fields
@@ -69,10 +70,17 @@ void loop() {
 
       servo.unwinding();                      // unwind before wind
       servo.winding();                        // wind
+
+      gyro.calibration();                     // calibration
     }
     else {                  // if == 'e'
       servo.unwinding();    // just unwind
+      gyro.disableCali();
     }
+  }
+
+  if(gyro.getCali()){       // if already calibration?
+
   }
   delay(100);
 }
