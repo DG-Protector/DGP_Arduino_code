@@ -153,4 +153,37 @@ boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing val
     return t0;
     
 }
+void DGP_Servo::printSerialRefs(){                  // for debug
+    Serial.println("==== DISPLAY REFS ====");
+    Serial.println("[malesPower CW]");
+    Serial.print(malesPower[CW][L]); Serial.print(','); Serial.print(malesPower[CW][M]); Serial.print(','); Serial.println(malesPower[CW][H]);
+    Serial.println("[malesPower CCW]");
+    Serial.print(malesPower[CCW][L]); Serial.print(','); Serial.print(malesPower[CCW][M]); Serial.print(','); Serial.println(malesPower[CCW][H]);
+    Serial.println("[femalesPower CW]");
+    Serial.print(femalesPower[CW][L]); Serial.print(','); Serial.print(femalesPower[CW][M]); Serial.print(','); Serial.println(femalesPower[CW][H]);
+    Serial.println("[femalesPower CCW]");
+    Serial.print(femalesPower[CCW][L]); Serial.print(','); Serial.print(femalesPower[CCW][M]); Serial.print(','); Serial.println(femalesPower[CCW][H]);
+    Serial.println("==== END ====");
+        
+    return;
+}
+
+void DGP_Servo::printSerialUsrInfo(){               // for debug
+    Serial.println("==== DISPLAY USER INFO ====");
+    if(isCustom){
+        Serial.println("[usrPower L CW, L CCW, R CW, R CCW]");
+        Serial.print(usrPowerArr[L][CW]); Serial.print(','); Serial.println(usrPowerArr[L][CCW]);
+        Serial.print(usrPowerArr[R][CW]); Serial.print(','); Serial.println(usrPowerArr[R][CCW]);
+    }
+    else {
+        Serial.println("[usrPower CW, CCW]");
+        Serial.print(usrPowerArr[0][CW]); Serial.print(','); Serial.println(usrPowerArr[0][CCW]);
+    }
+    Serial.println("==== END ====");
+        
+    return;
+}
+
+
+
 #endif
