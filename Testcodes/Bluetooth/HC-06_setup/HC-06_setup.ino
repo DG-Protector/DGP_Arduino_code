@@ -14,7 +14,7 @@
  * if version is 1.8?
    - AT+NAME[name]: change name
    - AT+PIN[passwd]: change password
-   - AT+ROLE[M or S]: change mode to (M)aster or (S)lave
+   - AT+ROLE=[M or S]: change mode to (M)aster or (S)lave
  * if version is 3.0?
    - AT+NAME=[name]: change name
    - AT+PSWD=[passwd]: change password
@@ -37,12 +37,14 @@ SoftwareSerial btSerial(BT_TX, BT_RX);  //bluetooth serial object
 
 void setup() {
   btSerial.begin(BRATE_DEF);  // begin software serial
-  Serial.begin(9600);         // begin hardware serial
+  Serial.begin(BRATE_DEF);    // begin hardware serial
 }
 
 void loop() {
-  if(btSerial.available())          // btSerial to Serial
+  if(btSerial.available()){          // btSerial to Serial
     Serial.write(btSerial.read());
-  if(Serial.available())            // Serial to btSerial
+  }
+  if(Serial.available()){            // Serial to btSerial
     btSerial.write(Serial.read());
+  }
 }
