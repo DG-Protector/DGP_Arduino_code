@@ -13,6 +13,8 @@
 #include <SoftwareSerial.h>
 #include "library\DGP.h"
 
+const bool devMod = true;       // toggle debug mode, if false = off
+
 /* ==== OBJECTS ==== */
 DGP_Fields fields;                      // fields info
 SoftwareSerial btSerial (BT_TX, BT_RX); // software serial for bluetooth
