@@ -55,6 +55,7 @@ class DGP_Servo {
         DGP_Servo(  uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initializing
                     uint8_t r_servo_pin, uint8_t r_sensor_pin   );
         ~DGP_Servo(){;}
+        void init();
         void setMaleRef(uint8_t arr[2][3]);             // set male's motor power reference
         void setFemaleRef(uint8_t arr[2][3]);           // set female's motor power reference
         void setUser(char op, uint8_t pL,uint8_t pR);   // set user's power
@@ -71,6 +72,16 @@ DGP_Servo::DGP_Servo(   uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initi
     servo_pin[R] = r_servo_pin;
     sensor[L] = l_sensor_pin;
     sensor[R] = r_sensor_pin;
+    
+}
+
+void DGP_Servo::init(){
+    servo[L].attach( servo_pin[L]);
+    servo[L].write(90);
+
+    servo[R].attach(servo_pin[R]);
+    servo[R].write(90);
+
     pinMode(sensor[L], INPUT);
     pinMode(sensor[R], INPUT);
 }
