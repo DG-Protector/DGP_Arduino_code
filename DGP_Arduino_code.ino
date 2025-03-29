@@ -6,9 +6,9 @@
  * last modified at 2025-03-28
 */
 
-//#include "library/DGP_Fields.h"
-//#include "library/DGP_Servo.h"
-//#include "library/DGP_Gyro.h"
+//#include "library\DGP_Fields.h"
+//#include "library\DGP_Servo.h"
+//#include "library\DGP_Gyro.h"
 
 #include <SoftwareSerial.h>
 #include "library\DGP.h"
@@ -29,17 +29,13 @@
 #define GYRO_SDA  A5  // MPU6050's PIN
 
 // etc.
-#define SERVO_STOP  90
-
 
 /* ==== CONSTANT VALUE ==== */
-const uint8_t CW_speeds[2][3] = { {0,   0,    0},    // [0][n] for female
-                                  {0,   0,    0}};   // [1][n] for male
                                 // low, mid,  high
 const bool devMod = true;       // toggle debug mode, if false = off
 
 /* ==== OBJECTS ==== */
-DGP_Fields fields;                      // fields info
+DGP_Fields  fields;                     // fields info
 SoftwareSerial btSerial (BT_TX, BT_RX); // software serial for bluetooth
 
 void setup() {
