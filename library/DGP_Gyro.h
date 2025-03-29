@@ -111,8 +111,8 @@ void DGP_Gyro::calibration(){                           // calibration and set c
 
 void DGP_Gyro::printSerialCali(){
     Serial.println("==== Cali ==== ");
-    Serial.print("Cali X: "); Serial.print(cali_x); Serial.print("Cali Y: "); Serial.println(cali_y); 
-    Serial.print("TH X: "); Serial.print(thhold_x); Serial.print("TH Y: "); Serial.println(thhold_y); 
+    Serial.print("Cali X: "); Serial.print(cali_x); Serial.print(", Cali Y: "); Serial.println(cali_y); 
+    Serial.print("TH X: "); Serial.print(thhold_x); Serial.print(", TH Y: "); Serial.println(thhold_y); 
     Serial.println("============= ");
 }
 
