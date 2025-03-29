@@ -199,7 +199,7 @@ boolean DGP_Servo::rotateUntilOutPoint(boolean d, boolean c){   // rotate until 
             }
         } 
     }
-    servo[d].write(SERVO_STP);              // stop servo
+    //servo[d].write(SERVO_STP);              // stop servo
     return true;                            // no time out? success
 }
 
@@ -209,9 +209,9 @@ void DGP_Servo::findPointOfRef(){           // find point of reference
 }
 
 boolean DGP_Servo::rotateOneStep(boolean d, boolean c){    // find point of reference
-    if(!rotateUntilFindPoint(L, c))
+    if(!rotateUntilFindPoint(d, c))
         return false;
-    if(!rotateUntilOutPoint(L, c))
+    if(!rotateUntilOutPoint(d, c))
         return false;
     return true;                                            // no time out? -> true
 }
