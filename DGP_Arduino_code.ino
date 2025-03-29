@@ -58,9 +58,9 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()){                 // if the data came in via bluetooth
-    String bufStr = "";                     // initialize buffer string                      
-    bufStr = Serial.readStringUntil('.'); // read chars until came '.'(eof)
+  if(btSerial.available()){                   // if the data came in via bluetooth
+    String bufStr = "";                       // initialize buffer string                      
+    bufStr = btSerial.readStringUntil('.');   // read chars until came '.'(eof)
     if(bufStr.charAt(0) != 'e'){              // 'e' is unwind
       fields.extractField(bufStr);            // extract fields from string
       if(devMod) fields.printSerialField();   // for debug: display fields
