@@ -49,6 +49,7 @@ class DGP_Gyro{
         void calibration();                     // calibration and set cali_x, cali_y
         void disableCali();                     // disable calibration
         boolean compareValue();                 // compare cali and calc
+        void printSerialCali();
 };
 
 DGP_Gyro::DGP_Gyro(uint8_t d, uint8_t c, float t = 0.95){
@@ -106,6 +107,13 @@ void DGP_Gyro::calibration(){                           // calibration and set c
     isCompCali = true;
 
     return;
+}
+
+void DGP_Gyro::printSerialCali(){
+    Serial.println("==== Cali ==== ");
+    Serial.print("Cali X: "); Serial.print(cali_x); Serial.print("Cali Y: "); Serial.println(cali_y); 
+    Serial.print("TH X: "); Serial.print(thhold_x); Serial.print("TH Y: "); Serial.println(thhold_y); 
+    Serial.println("============= ");
 }
 
 void DGP_Gyro::disableCali(){

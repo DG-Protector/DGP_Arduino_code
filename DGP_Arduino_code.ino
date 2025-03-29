@@ -58,9 +58,9 @@ void setup() {
 }
 
 void loop() {
-  if(btSerial.available()){                   // if the data came in via bluetooth
+  if(Serial.available()){                   // if the data came in via bluetooth
     String bufStr = "";                       // initialize buffer string                      
-    bufStr = btSerial.readStringUntil('.');   // read chars until came '.'(eof)
+    bufStr = Serial.readStringUntil('.');   // read chars until came '.'(eof)
     if(bufStr.charAt(0) != 'e'){              // 'e' is unwind
       fields.extractField(bufStr);            // extract fields from string
       if(devMod) fields.printSerialField();   // for debug: display fields
@@ -72,6 +72,7 @@ void loop() {
       servo.unwinding();                      // unwind before wind
       servo.winding();                        // wind
       gyro.calibration();                     // calibration
+      if(devMod) gyro.printSerialCali();      // for debug: display gyro
       if(devMod) digitalWrite(13, HIGH);      // for debug
     }
     else {                                    // if == 'e'
@@ -84,5 +85,5 @@ void loop() {
   if(gyro.getCali()){       // if already calibration?
 
   }
-  delay(100);
+  delay(10);
 }
