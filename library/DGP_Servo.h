@@ -22,7 +22,7 @@
 #define MALE    0   // male's indicator
 #define FEMALE  1   // female's indicator
 
-#define TIME_OUT    5000    // timeout ref
+#define TIME_OUT    500    // timeout ref
 
 #define SERVO_STP   90      // servo stop
 
