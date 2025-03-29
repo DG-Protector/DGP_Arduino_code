@@ -22,6 +22,8 @@
 #define MALE    0   // male's indicator
 #define FEMALE  1   // female's indicator
 
+#define TIME_OUT    1000    // timeout ref
+
 #define SERVO_STP   90      // servo stop
 
 class DGP_Servo {
@@ -41,12 +43,12 @@ class DGP_Servo {
         uint8_t usrPowerArr[2][2] = { { 0, 0 },             // user's custom setting if custom mode? -> {L CW, LCCW}, {R CW, R CCW}
                                       { 0, 0 } };           // else? -> {CW, CCW}
 
-        boolean getSensorValue(uint8_t pin);    // read senser's sensing value
-        void findPointOfRef();                  // find point of reference
-        void winding();                         // winding Counter ClockWise
-        void unwinding();                       // winding Counter Clock
-        void rotateUntilFindPoint();
-        void rotateUntilOutPoint();
+        boolean getSensorValue(uint8_t pin);                // read senser's sensing value
+        void findPointOfRef();                              // find point of reference
+
+        boolean rotateOneStep(boolean d, boolean c);        // rotate just one step         //if 0, fail(timeout)
+        boolean rotateUntilFindPoint(boolean d, boolean c); // rotate until find of point   //if 0, fail(timeout)
+        boolean rotateUntilOutPoint(boolean d, boolean c);  // rotate until out of point    //if 0, fail(timeout)
     public:
         DGP_Servo(){;}
         DGP_Servo(  uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initializing
@@ -55,7 +57,8 @@ class DGP_Servo {
         void setMaleRef(uint8_t arr[2][3]);             // set male's motor power reference
         void setFemaleRef(uint8_t arr[2][3]);           // set female's motor power reference
         void setUser(char op, uint8_t pL,uint8_t pR);   // set user's power
-        void bandWinding();                             // band winding
+        void winding();                                 // winding
+        void unwinding();                               // unwinding
         void printSerialRefs();                         // for debug
         void printSerialUsrInfo();                      // for debug
 };
@@ -141,10 +144,6 @@ void DGP_Servo::setUser(char op, uint8_t pL, uint8_t pR){
     return;
 }
 
-void DGP_Servo::bandWinding(){              // band winding
-;
-}
-
 boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing value
     boolean t0 = digitalRead(pin);
     delay(10);
@@ -159,29 +158,83 @@ boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing val
     
 }
 
-void DGP_Servo::rotateUntilFindPoint(){             // rotate until find of point
-    /*
-    if(_checkSensor(L_SS)){;}       // already reached the point of reference? -> end.
+boolean DGP_Servo::rotateUntilFindPoint(boolean d, boolean c){  // rotate until find of point
+    if(getSensorValue(sensor[d])){;}        // already reached the point of reference? -> end.
     else {
-        L_SERVO.write(SERVO_BKWD);  // servo rotate
-        while(!_checkSensor(L_SS)); // break if sensor find point of reference
-        L_SERVO.write(SERVO_STOP);  // stop servo
-    }*/
-}
-void DGP_Servo::rotateUntilOutPoint(){              // rotate until out of point
-    ;
-}
-
-void DGP_Servo::findPointOfRef(){                   // find point of reference
-    ;
-}
-
-void DGP_Servo::winding(){                          // winding Counter ClockWise
-;
+        servo[d].write(usrPowerArr[d][c]);  // servo rotate
+        uint16_t count = 0;
+        while(!getSensorValue(sensor[d])){  // break if sensor find point of reference
+            delay(1); count++;              // count
+            if(count > TIME_OUT){           // time out!
+                servo[d].write(SERVO_STP);  // stop servo
+                return false;               // fail
+            }
+        }   
+    }
+    servo[d].write(SERVO_STP);              // stop servo
+    return true;                            // no time out? success
 }
 
-void DGP_Servo::unwinding(){                        // winding Counter Clock
-;
+boolean DGP_Servo::rotateUntilOutPoint(boolean d, boolean c){   // rotate until out of point
+    if(!getSensorValue(sensor[d])){;}        // already reached the point of reference? -> end.
+    else {
+        servo[d].write(usrPowerArr[d][c]);  // servo rotate
+        uint16_t count = 0;
+        while(getSensorValue(sensor[d])){   // break if sensor find point of reference
+            delay(1); count++;              // count
+            if(count > TIME_OUT){           // time out!
+                servo[d].write(SERVO_STP);  // stop servo
+                return false;               // fail
+            }
+        } 
+    }
+    servo[d].write(SERVO_STP);              // stop servo
+    return true;                            // no time out? success
+}
+
+void DGP_Servo::findPointOfRef(){           // find point of reference
+    rotateUntilFindPoint(L, CW);
+    rotateUntilFindPoint(R, CCW);
+}
+
+boolean DGP_Servo::rotateOneStep(boolean d, boolean c){    // find point of reference
+    if(!rotateUntilFindPoint(L, c))
+        return false;
+    if(!rotateUntilOutPoint(L, c))
+        return false;
+    return true;                                            // no time out? -> true
+}
+
+void DGP_Servo::winding(){                  // winding
+    findPointOfRef();
+
+    boolean L_TO = false, R_TO = false;     // check time out 
+    while ((!L_TO || !R_TO)){               // repeat until if a timeout occurs L & R
+        if(!L_TO){                          // rotate if not occurred time out
+            if(rotateOneStep(L, CCW))       // wind
+                howManyWind[L]++;           // count 
+            else                            // if occurred time out?
+                L_TO = true;                // set
+        }
+        if(!R_TO){
+            if(rotateOneStep(R, CW))
+                howManyWind[R]++;
+            else
+                R_TO = true;
+        }
+    }
+}
+
+void DGP_Servo::unwinding(){                        // unwinding
+    findPointOfRef();
+
+    while (!(howManyWind[L] == 0 || howManyWind[L] == 0)){  // repeat until if unwind done
+        if(rotateOneStep(L, CW))                            // unwind
+            howManyWind[L]--;                               // count down
+
+        if(rotateOneStep(R, CCW))
+            howManyWind[R]--;
+    }
 }
 
 void DGP_Servo::printSerialRefs(){                  // for debug
