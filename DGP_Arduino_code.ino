@@ -59,10 +59,20 @@ void loop() {
   if(btSerial.available()){                 // if the data came in via bluetooth
     String bufStr = "";                     // initialize buffer string                      
     bufStr = btSerial.readStringUntil('.'); // read chars until came '.'(eof)
-    fields.extractField(bufStr);            // extract fields from string
-    if(devMod) fields.printSerialField();   // for debug: display fields
-    servo.setUser(fields.getOp(), fields.getPL(), fields.getPR()); // set user's mode
-    servo.printSerialUsrInfo();
+    if(bufStr.charAt(0) != 'e'){              // 'e' is unwind
+      fields.extractField(bufStr);            // extract fields from string
+      if(devMod) fields.printSerialField();   // for debug: display fields
+      servo.setUser(fields.getOp(), 
+                    fields.getPL(), 
+                    fields.getPR());          // set user's mode
+      if(devMod) servo.printSerialUsrInfo();  // for debug: display info
+
+      servo.unwinding();                      // unwind before wind
+      servo.winding();                        // wind
+    }
+    else {                  // if == 'e'
+      servo.unwinding();    // just unwind
+    }
   }
   delay(100);
 }
