@@ -71,12 +71,13 @@ void loop() {
 
       servo.unwinding();                      // unwind before wind
       servo.winding();                        // wind
-
       gyro.calibration();                     // calibration
+      if(devMod) digitalWrite(13, HIGH);      // for debug
     }
-    else {                  // if == 'e'
-      servo.unwinding();    // just unwind
+    else {                                    // if == 'e'
+      servo.unwinding();                      // just unwind
       gyro.disableCali();
+      if(devMod) digitalWrite(13, HIGH);      // for debug
     }
   }
 
