@@ -29,6 +29,7 @@
 class DGP_Servo {
     private:
         Servo servo[2];
+        uint8_t servo_pin[2];
         uint8_t sensor[2];
         uint8_t howManyWind[2] = {0, 0};                    // count per 1/4 cycle = 1 step {L, R}
 
@@ -66,9 +67,8 @@ class DGP_Servo {
 
 DGP_Servo::DGP_Servo(   uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initializing
                         uint8_t r_servo_pin, uint8_t r_sensor_pin   ){
-    servo[L].attach(l_servo_pin);
-    servo[R].attach(r_servo_pin);
-    
+    servo_pin[L] = l_servo_pin;
+    servo_pin[R] = r_servo_pin;
     sensor[L] = l_sensor_pin;
     sensor[R] = r_sensor_pin;
     pinMode(sensor[L], INPUT);
