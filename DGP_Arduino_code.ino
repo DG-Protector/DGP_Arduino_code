@@ -13,6 +13,29 @@
 #include <SoftwareSerial.h>
 #include "library\DGP.h"
 
+/* ==== MACROS ==== */
+// pin number
+#define BT_RX     2
+#define BT_TX     3   // HC-06's PIN
+
+#define SENSOR_L  5
+#define SENSOR_R  6   // SENSOR's PIN
+
+#define SERVO_L   10
+#define SERVO_R   11  // SERVO's PIN
+
+#define GYRO_INT  4
+#define GYRO_SCL  A4
+#define GYRO_SDA  A5  // MPU6050's PIN
+
+// etc.
+#define SERVO_STOP  90
+
+
+/* ==== CONSTANT VALUE ==== */
+const uint8_t CW_speeds[2][3] = { {0,   0,    0},    // [0][n] for female
+                                  {0,   0,    0}};   // [1][n] for male
+                                // low, mid,  high
 const bool devMod = true;       // toggle debug mode, if false = off
 
 /* ==== OBJECTS ==== */
