@@ -2,8 +2,9 @@
  * DGP_Arduino_code
  *
  * written by jihoonkimtech
+ * contributed by krin3434 (at gyro library)
  *
- * last modified at 2025-03-28
+ * last modified at 2025-03-30
 */
 
 //#include "library\DGP_Fields.h"

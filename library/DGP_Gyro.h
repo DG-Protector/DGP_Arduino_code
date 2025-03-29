@@ -1,6 +1,15 @@
 #ifndef _DGP_GYRO_H   // header-guard
 #define _DGP_GYRO_H
 
+/*
+ * library of gyro sensing
+ *
+ * written by jihoonkimtech
+ * contributed by krin3434
+ *
+ * last modified at 2025-03-30
+*/
+
 #include "DGP.h"
 #include <Wire.h>
 #include <MPU6050.h>
