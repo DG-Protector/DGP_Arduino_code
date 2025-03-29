@@ -140,6 +140,11 @@ void DGP_Servo::setUser(char op, uint8_t pL, uint8_t pR){
 
     return;
 }
+
+void DGP_Servo::bandWinding(){              // band winding
+;
+}
+
 boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing value
     boolean t0 = digitalRead(pin);
     delay(10);
@@ -153,6 +158,32 @@ boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing val
     return t0;
     
 }
+
+void DGP_Servo::rotateUntilFindPoint(){             // rotate until find of point
+    /*
+    if(_checkSensor(L_SS)){;}       // already reached the point of reference? -> end.
+    else {
+        L_SERVO.write(SERVO_BKWD);  // servo rotate
+        while(!_checkSensor(L_SS)); // break if sensor find point of reference
+        L_SERVO.write(SERVO_STOP);  // stop servo
+    }*/
+}
+void DGP_Servo::rotateUntilOutPoint(){              // rotate until out of point
+    ;
+}
+
+void DGP_Servo::findPointOfRef(){                   // find point of reference
+    ;
+}
+
+void DGP_Servo::winding(){                          // winding Counter ClockWise
+;
+}
+
+void DGP_Servo::unwinding(){                        // winding Counter Clock
+;
+}
+
 void DGP_Servo::printSerialRefs(){                  // for debug
     Serial.println("==== DISPLAY REFS ====");
     Serial.println("[malesPower CW]");
