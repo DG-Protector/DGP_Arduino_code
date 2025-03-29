@@ -22,15 +22,13 @@
 #define MALE    0   // male's indicator
 #define FEMALE  1   // female's indicator
 
-#define SERVO_STP   90  // servo stop
+#define SERVO_STP   90      // servo stop
 
 class DGP_Servo {
     private:
-        Servo leftServo;
-        Servo rightServo;
-        uint8_t leftSensor;
-        uint8_t rightSensor;
-        uint8_t howManyWind = 0;    // count per 1/4 cycle
+        Servo servo[2];
+        uint8_t sensor[2];
+        uint8_t howManyWind[2] = {0, 0};                    // count per 1/4 cycle = 1 step {L, R}
 
         // motor power reference by gender
         uint8_t malesPower[2][3] = { {0,   0,    0},        // [0][n] for ClockWise
@@ -63,13 +61,15 @@ class DGP_Servo {
 };
 
 
-DGP_Servo::DGP_Servo(   uint8_t l_servo_pin=0, uint8_t l_sensor_pin=0,      // initializing
-                        uint8_t r_servo_pin=0, uint8_t r_sensor_pin=0   ){
-    leftServo.attach(l_servo_pin);
-    rightServo.attach(r_servo_pin);
-
-    pinMode(l_sensor_pin, INPUT);
-    pinMode(r_sensor_pin, INPUT);
+DGP_Servo::DGP_Servo(   uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initializing
+                        uint8_t r_servo_pin, uint8_t r_sensor_pin   ){
+    servo[L].attach(l_servo_pin);
+    servo[R].attach(r_servo_pin);
+    
+    sensor[L] = l_sensor_pin;
+    sensor[R] = r_sensor_pin;
+    pinMode(sensor[L], INPUT);
+    pinMode(sensor[R], INPUT);
 }
 
 void DGP_Servo::setMaleRef(uint8_t arr[2][3]){      // set male's motor power reference
@@ -102,28 +102,28 @@ void DGP_Servo::setUser(char op, uint8_t pL, uint8_t pR){
     isCustom = false;                                   // initializing mode toggle
     switch(op){
         case 'l':   // case of low power for female setting
-            usrPowerArr[0][CW] = femalesPower[CW][L];
-            usrPowerArr[0][CCW] = femalesPower[CCW][L];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = femalesPower[CW][L];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = femalesPower[CCW][L];
             break;
         case 'L':   // case of low power for male setting
-            usrPowerArr[0][CW] = femalesPower[CW][L];
-            usrPowerArr[0][CCW] = femalesPower[CCW][L];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = femalesPower[CW][L];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = femalesPower[CCW][L];
             break;
         case 'm':   // case of middle power for female setting
-            usrPowerArr[0][CW] = femalesPower[CW][M];
-            usrPowerArr[0][CCW] = femalesPower[CCW][M];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = femalesPower[CW][M];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = femalesPower[CCW][M];
             break;
         case 'M':   // case of middle power for male setting
-            usrPowerArr[0][CW] = malesPower[CW][M];
-            usrPowerArr[0][CCW] = malesPower[CCW][M];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = malesPower[CW][M];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = malesPower[CCW][M];
             break;
         case 'h':   // case of high power for female setting
-            usrPowerArr[0][CW] = femalesPower[CW][H];
-            usrPowerArr[0][CCW] = femalesPower[CCW][H];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = femalesPower[CW][H];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = femalesPower[CCW][H];
             break;
         case 'H':   // case of high power for male setting
-            usrPowerArr[0][CW] = malesPower[CW][H];
-            usrPowerArr[0][CCW] = malesPower[CCW][H];
+            usrPowerArr[L][CW] = usrPowerArr[R][CW] = malesPower[CW][H];
+            usrPowerArr[L][CCW] = usrPowerArr[R][CCW] = malesPower[CCW][H];
             break;
         case 'u':
         case 'U':   // case of user setting
