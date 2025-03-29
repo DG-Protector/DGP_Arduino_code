@@ -140,4 +140,17 @@ void DGP_Servo::setUser(char op, uint8_t pL, uint8_t pR){
 
     return;
 }
+boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing value
+    boolean t0 = digitalRead(pin);
+    delay(10);
+    boolean t1 = digitalRead(pin);
+
+    if(t0 != t1){                                   // debouncing
+        delay(10);
+        t0 = digitalRead(pin);
+    }
+
+    return t0;
+    
+}
 #endif
