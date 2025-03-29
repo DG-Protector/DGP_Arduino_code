@@ -15,8 +15,8 @@
 class DGP_Fields {
     private:
         char op;                    // operator
-        uint8_t paramLeft;          // parameter of left servo
-        uint8_t paramRight;         // parameter of right servo
+        uint8_t paramLeft = 0;      // parameter of left servo
+        uint8_t paramRight = 0;     // parameter of right servo
 
     public:
         DGP_Fields(){;}
@@ -45,9 +45,9 @@ class DGP_Fields {
  * eof is for point end of field (it's always (char)'.')
 ########################################################## */
 void DGP_Fields::extractField(String str){
-  // read op
-  op = str.charAt(0);          // copy op field
-  str.remove(0,1);             // remove op in origin fields
+    // read op
+    op = str.charAt(0);          // copy op field
+    str.remove(0,1);             // remove op in origin fields
 
     bool isNeedParams = false;
     switch(op){     // check need param
@@ -63,7 +63,7 @@ void DGP_Fields::extractField(String str){
             isNeedParams = true;    // need param
             break;
         default:
-            break;
+            return; // if error value came? -> end
     }
 
     if(isNeedParams){
@@ -89,7 +89,5 @@ void DGP_Fields::printSerialField(){
     Serial.println(paramRight);
     Serial.println("======end======");
 };
-
-
 
 #endif
