@@ -31,16 +31,28 @@
 // etc.
 
 /* ==== CONSTANT VALUE ==== */
-                                // low, mid,  high
-const bool devMod = true;       // toggle debug mode, if false = off
+
+/* ==== VARIABLES ==== */
+uint8_t M_speeds[2][3] = { {120,  150,  180},     // [0][n] for ClockWise
+                           {60,   30,   0} };   // [1][n] for Counter-ClockWise                     
+uint8_t FM_speeds[2][3] = { {100, 120,  140},    // [0][n] for ClockWise
+                            {80,   60,  40} };  // [1][n] for Counter-ClockWise
+                          // low, mid,  high
+bool devMod = true;       // toggle debug mode, if false = off
 
 /* ==== OBJECTS ==== */
 DGP_Fields  fields;                     // fields info
+DGP_Servo   servo(SERVO_L, SENSOR_L, 
+                  SERVO_R, SENSOR_R );  // for band winding 
 SoftwareSerial btSerial (BT_TX, BT_RX); // software serial for bluetooth
 
 void setup() {
   if(devMod) Serial.begin(9600);  // for debug: serial start
   btSerial.begin(9600);           // bluetooth comm start
+
+  servo.setMaleRef(M_speeds);     // set male's motor power reference
+  servo.setFemaleRef(FM_speeds);  // set female's motor power reference
+  servo.printSerialRefs();
 }
 
 void loop() {
@@ -49,6 +61,8 @@ void loop() {
     bufStr = btSerial.readStringUntil('.'); // read chars until came '.'(eof)
     fields.extractField(bufStr);            // extract fields from string
     if(devMod) fields.printSerialField();   // for debug: display fields
+    servo.setUser(fields.getOp(), fields.getPL(), fields.getPR()); // set user's mode
+    servo.printSerialUsrInfo();
   }
   delay(100);
 }
