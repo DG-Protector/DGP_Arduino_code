@@ -97,4 +97,47 @@ void DGP_Servo::setFemaleRef(uint8_t arr[2][3]){    // set female's motor power 
     
     return;
 }
+
+void DGP_Servo::setUser(char op, uint8_t pL, uint8_t pR){   
+    isCustom = false;                                   // initializing mode toggle
+    switch(op){
+        case 'l':   // case of low power for female setting
+            usrPowerArr[0][CW] = femalesPower[CW][L];
+            usrPowerArr[0][CCW] = femalesPower[CCW][L];
+            break;
+        case 'L':   // case of low power for male setting
+            usrPowerArr[0][CW] = femalesPower[CW][L];
+            usrPowerArr[0][CCW] = femalesPower[CCW][L];
+            break;
+        case 'm':   // case of middle power for female setting
+            usrPowerArr[0][CW] = femalesPower[CW][M];
+            usrPowerArr[0][CCW] = femalesPower[CCW][M];
+            break;
+        case 'M':   // case of middle power for male setting
+            usrPowerArr[0][CW] = malesPower[CW][M];
+            usrPowerArr[0][CCW] = malesPower[CCW][M];
+            break;
+        case 'h':   // case of high power for female setting
+            usrPowerArr[0][CW] = femalesPower[CW][H];
+            usrPowerArr[0][CCW] = femalesPower[CCW][H];
+            break;
+        case 'H':   // case of high power for male setting
+            usrPowerArr[0][CW] = malesPower[CW][H];
+            usrPowerArr[0][CCW] = malesPower[CCW][H];
+            break;
+        case 'u':
+        case 'U':   // case of user setting
+            // < 90 = CW, > 90 = CCW.. fast as far from 90.
+            isCustom = true;
+            uint8_t biasL = map(pL, 0, 100, 0, 90);     // calculate bias
+            uint8_t biasR = map(pR, 0, 100, 0, 90); 
+            usrPowerArr[L][CW] = SERVO_STP + biasL;     // 90 + n (if n > 0)? it will rotate CW
+            usrPowerArr[L][CCW] = SERVO_STP - biasL;    // 90 - n (if n > 0)? it will rotate CCW
+            usrPowerArr[R][CW] = SERVO_STP + biasR;
+            usrPowerArr[R][CCW] = SERVO_STP - biasR;
+            break;
+    }
+
+    return;
+}
 #endif
