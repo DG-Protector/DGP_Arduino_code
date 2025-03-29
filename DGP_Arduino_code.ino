@@ -6,12 +6,12 @@
  * last modified at 2025-03-28
 */
 
-#include "library/DGP_Fields.h"
-#include "library/DGP_Servo.h"
-#include "library/DGP_Gyro.h"
+//#include "library/DGP_Fields.h"
+//#include "library/DGP_Servo.h"
+//#include "library/DGP_Gyro.h"
 
-void setup() {
 #include <SoftwareSerial.h>
+#include "library\DGP.h"
 
 /* ==== OBJECTS ==== */
 DGP_Fields fields;                      // fields info
