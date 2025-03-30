@@ -78,13 +78,13 @@ void loop() {
       case 'S':                                 // 'S' is Slience
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  // for debug
-        Sound = false;
+        Sound = false;                          // Sound off
         break;
 
       case 'B':                                 // 'B' is Buzzer
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  //for debug
-        Sound = true;
+        Sound = true;                           // Sound on
         break;
 
       case 'e':             // 'e' is unwind
@@ -116,27 +116,27 @@ void loop() {
       if (Sound == true) {
         unsigned long currentMillis = millis();
 
-        if (toneStep == 0 && currentMillis - prevMillis >= 0) {
+        if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate      
           tone(Buzzer, 1000);  // first sound
           prevMillis = currentMillis;
           toneStep = 1;
         }
 
-        else if (toneStep == 1 && currentMillis - prevMillis >= 150) {
+        else if (toneStep == 1 && currentMillis - prevMillis >= 150) {  //millis calculate   
           noTone(Buzzer);  // waiting
           prevMillis = currentMillis;
           toneStep = 2;
         }
 
-        else if (toneStep == 2 && currentMillis - prevMillis >= 50) {
+        else if (toneStep == 2 && currentMillis - prevMillis >= 50) {   //millis calculate
           tone(Buzzer, 1300);  // second sound
           prevMillis = currentMillis;
           toneStep = 3;
         }
 
-        else if (toneStep == 3 && currentMillis - prevMillis >= 200) {
+        else if (toneStep == 3 && currentMillis - prevMillis >= 200) {   //millis calculate
           noTone(Buzzer);  // end
-          toneStep = 4;       // only 
+          toneStep = 4;       // playing only one time
         }
 
       } else {
