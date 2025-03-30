@@ -16,41 +16,51 @@
 
 /* ==== MACROS ==== */
 // pin number
-#define BT_RX     2
-#define BT_TX     3   // HC-06's PIN
+#define BT_RX 2
+#define BT_TX 3  // HC-06's PIN
 
-#define SENSOR_L  5
-#define SENSOR_R  6   // SENSOR's PIN
+#define SENSOR_L 5
+#define SENSOR_R 6  // SENSOR's PIN
 
-#define SERVO_L   10
-#define SERVO_R   11  // SERVO's PIN
+#define SERVO_L 10
+#define SERVO_R 11  // SERVO's PIN
 
-#define GYRO_INT  4
-#define GYRO_SCL  A4
-#define GYRO_SDA  A5  // MPU6050's PIN
+#define GYRO_INT 4
+#define GYRO_SCL A4
+#define GYRO_SDA A5  // MPU6050's PIN
+
+#define Buzzer 8
+
+#define LED 9
 
 // etc.
 
 /* ==== CONSTANT VALUE ==== */
-
+const long interval = 200;  // LED interval time setting
 /* ==== VARIABLES ==== */
-uint8_t M_speeds[2][3] = { {120,  150,  180},     // [0][n] for ClockWise
-                           {60,   30,   0} };   // [1][n] for Counter-ClockWise                     
-uint8_t FM_speeds[2][3] = { {100, 120,  140},    // [0][n] for ClockWise
-                            {80,   60,  40} };  // [1][n] for Counter-ClockWise
-                          // low, mid,  high
-bool devMod = true;       // toggle debug mode, if false = off
+uint8_t M_speeds[2][3] = { { 120, 150, 180 },   // [0][n] for ClockWise
+                           { 60, 30, 0 } };     // [1][n] for Counter-ClockWise
+uint8_t FM_speeds[2][3] = { { 100, 120, 140 },  // [0][n] for ClockWise
+                            { 80, 60, 40 } };   // [1][n] for Counter-ClockWise
+                                                // low, mid,  high
+bool devMod = true;                             // toggle debug mode, if false = off
+
+bool Sound = true;  // toggle Sound mode, if true buzzer on, if false led on, default mode is Sound
+bool ledState = LOW;
+int toneStep = 0;   // trace every count of sound
+
+unsigned long prevMillis = 0;  // last time when LED changed
 
 /* ==== OBJECTS ==== */
-DGP_Fields  fields;                     // fields info
-DGP_Servo   servo(SERVO_L, SENSOR_L, 
-                  SERVO_R, SENSOR_R );  // for band winding 
-DGP_Gyro    gyro(GYRO_SDA, GYRO_SCL);   // for gyro sensing
-SoftwareSerial btSerial (BT_TX, BT_RX); // software serial for bluetooth
+DGP_Fields fields;  // fields info
+DGP_Servo servo(SERVO_L, SENSOR_L,
+                SERVO_R, SENSOR_R);     // for band winding
+DGP_Gyro gyro(GYRO_SDA, GYRO_SCL);      // for gyro sensing
+SoftwareSerial btSerial(BT_TX, BT_RX);  // software serial for bluetooth
 
 void setup() {
-  if(devMod) Serial.begin(9600);  // for debug: serial start
-  btSerial.begin(9600);           // bluetooth comm start
+  if (devMod) Serial.begin(9600);  // for debug: serial start
+  btSerial.begin(9600);            // bluetooth comm start
   servo.init();
   servo.setMaleRef(M_speeds);     // set male's motor power reference
   servo.setFemaleRef(FM_speeds);  // set female's motor power reference
@@ -58,32 +68,86 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()){                   // if the data came in via bluetooth
-    String bufStr = "";                       // initialize buffer string                      
-    bufStr = Serial.readStringUntil('.');   // read chars until came '.'(eof)
-    if(bufStr.charAt(0) != 'e'){              // 'e' is unwind
-      fields.extractField(bufStr);            // extract fields from string
-      if(devMod) fields.printSerialField();   // for debug: display fields
-      servo.setUser(fields.getOp(), 
-                    fields.getPL(), 
-                    fields.getPR());          // set user's mode
-      if(devMod) servo.printSerialUsrInfo();  // for debug: display info
+  if (Serial.available()) {                // if the data came in via bluetooth
+    String bufStr = "";                    // initialize buffer string
+    bufStr = Serial.readStringUntil('.');  // read chars until came '.'(eof)
 
-      servo.unwinding();                      // unwind before wind
-      servo.winding();                        // wind
-      gyro.calibration();                     // calibration
-      if(devMod) gyro.printSerialCali();      // for debug: display gyro
-      if(devMod) digitalWrite(13, HIGH);      // for debug
-    }
-    else {                                    // if == 'e'
-      servo.unwinding();                      // just unwind
-      gyro.disableCali();
-      if(devMod) digitalWrite(13, HIGH);      // for debug
+    char cmd = bufStr.charAt(0);
+
+    switch (cmd) {
+      case 'S':                                 // 'S' is Slience
+        fields.extractField(bufStr);            // extract fields from string
+        if (devMod) fields.printSerialField();  // for debug
+        Sound = false;                          // Sound off
+        break;
+
+      case 'B':                                 // 'B' is Buzzer
+        fields.extractField(bufStr);            // extract fields from string
+        if (devMod) fields.printSerialField();  //for debug
+        Sound = true;                           // Sound on
+        break;
+
+      case 'e':             // 'e' is unwind
+        servo.unwinding();  // just unwind
+        gyro.disableCali();
+        if (devMod) digitalWrite(13, HIGH);  // for debug
+        break;
+
+      default:
+        // 기본 처리 (기존 코드 유지)
+        fields.extractField(bufStr);  // extract fields from string
+        if (devMod) fields.printSerialField();
+        servo.setUser(fields.getOp(),
+                      fields.getPL(),
+                      fields.getPR());           // set user's mode
+        if (devMod) servo.printSerialUsrInfo();  // for debug: display info
+
+        servo.unwinding();                   // unwind before wind
+        servo.winding();                     // wind
+        gyro.calibration();                  // calibration
+        if (devMod) gyro.printSerialCali();  // for debug: display gyro
+        if (devMod) digitalWrite(13, HIGH);  // for debug
+        break;
     }
   }
 
-  if(gyro.getCali()){       // if already calibration?
+  if (gyro.getCali()) {  // if already calibration?
+    while (compareValue != true) {
+      if (Sound == true) {
+        unsigned long currentMillis = millis();
 
+        if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate      
+          tone(Buzzer, 1000);  // first sound
+          prevMillis = currentMillis;
+          toneStep = 1;
+        }
+
+        else if (toneStep == 1 && currentMillis - prevMillis >= 150) {  //millis calculate   
+          noTone(Buzzer);  // waiting
+          prevMillis = currentMillis;
+          toneStep = 2;
+        }
+
+        else if (toneStep == 2 && currentMillis - prevMillis >= 50) {   //millis calculate
+          tone(Buzzer, 1300);  // second sound
+          prevMillis = currentMillis;
+          toneStep = 3;
+        }
+
+        else if (toneStep == 3 && currentMillis - prevMillis >= 200) {   //millis calculate
+          noTone(Buzzer);  // end
+          toneStep = 4;       // playing only one time
+        }
+
+      } else {
+        unsigned long currentMillis = millis();
+        if (currentMillis - prevMillis >= interval) {  //millis calculate
+          prevMillis = currentMillis;                  // initialize time
+          ledState = !ledState;                        // toggle LED
+          digitalWrite(LED, ledState);                 // repeat toggling
+        }
+      }
+    }
   }
   delay(10);
 }
