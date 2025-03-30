@@ -39,7 +39,7 @@ class DGP_Gyro{
         void refresh();             // re-calculate x, y
     public: 
         DGP_Gyro(){;}
-        DGP_Gyro(uint8_t d, uint8_t c, float t = 0.95);
+        DGP_Gyro(uint8_t d, uint8_t c, float t = 0.15);
         ~DGP_Gyro(){;}
 
         void init();
@@ -122,14 +122,18 @@ void DGP_Gyro::disableCali(){
     return;
 }
 
-boolean DGP_Gyro::compareValue(){
+boolean DGP_Gyro::compareValue(){                                       // check posture, if good = true
     refresh();
-    if (calc_x < thhold_x || calc_y < thhold_y) {   // good state
-        return true;
+    if (calc_x > calc_x+thhold_x || calc_y > calc_y+thhold_y) {         // bad state
+        return false;
+    } else if (calc_x < calc_x-thhold_x || calc_y < calc_y-thhold_y) {  // bad state
+        return false;
     } 
     else {
-        return false;
+        return true;
     }
+
+    return true;
 }
 
 
