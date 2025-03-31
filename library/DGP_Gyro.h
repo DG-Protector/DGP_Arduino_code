@@ -99,6 +99,8 @@ void DGP_Gyro::calibration(boolean dev = false){                           // ca
     int16_t stackX = 0;
     int16_t stackY = 0;
 
+    gyro.setXGyroOffset(0);
+    gyro.setYGyroOffset(0);
 
     if(dev) Serial.println("==== BEGIN CALI ====");
 
