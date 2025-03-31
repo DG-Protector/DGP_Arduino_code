@@ -54,7 +54,7 @@ class DGP_Gyro{
         void printSerialCali();
 };
 
-DGP_Gyro::DGP_Gyro(uint8_t d, uint8_t c, float t = 0.95){
+DGP_Gyro::DGP_Gyro(uint8_t d, uint8_t c, float t = 0.15){
     sda_pin = d;
     scl_pin = c;
     thRef = t;
