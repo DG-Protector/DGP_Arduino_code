@@ -108,9 +108,8 @@ void loop() {
                       fields.getPR());           // set user's mode
         if (devMod) servo.printSerialUsrInfo();  // for debug: display info
 
-        servo.unwinding();                   // unwind before wind
-        servo.winding();                     // wind
-        if (devMod) digitalWrite(13, HIGH);  // for debug
+        servo.unwinding();                    // unwind before wind
+        servo.winding();                      // wind
         gyro.calibration(true);               // calibration
         if (devMod) gyro.printSerialCali();   // for debug: display gyro
         break;
@@ -118,42 +117,51 @@ void loop() {
   }
 
   if (gyro.getCali()) {  // if already calibration?
-    while (compareValue != true) {
-      if (Sound == true) {
-        unsigned long currentMillis = millis();
+    while (!gyro.compareValue(true)) {
+      unsigned long currentMillis = millis();
 
-        if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate      
+      if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate  
+        if(Sound){    
           tone(Buzzer, 1000);  // first sound
           prevMillis = currentMillis;
           toneStep = 1;
+        } else{
+          digitalWrite(LED, LOW);
         }
+      }
 
-        else if (toneStep == 1 && currentMillis - prevMillis >= 150) {  //millis calculate   
+      else if (toneStep == 1 && currentMillis - prevMillis >= 150) {  //millis calculate   
+        if(Sound){
           noTone(Buzzer);  // waiting
           prevMillis = currentMillis;
           toneStep = 2;
+        } else{
+          digitalWrite(LED, HIGH);
         }
+      }
 
-        else if (toneStep == 2 && currentMillis - prevMillis >= 50) {   //millis calculate
+      else if (toneStep == 2 && currentMillis - prevMillis >= 50) {   //millis calculate
+        if(Sound){
           tone(Buzzer, 1300);  // second sound
           prevMillis = currentMillis;
           toneStep = 3;
-        }
-
-        else if (toneStep == 3 && currentMillis - prevMillis >= 200) {   //millis calculate
-          noTone(Buzzer);  // end
-          toneStep = 4;       // playing only one time
-        }
-
-      } else {
-        unsigned long currentMillis = millis();
-        if (currentMillis - prevMillis >= interval) {  //millis calculate
-          prevMillis = currentMillis;                  // initialize time
-          ledState = !ledState;                        // toggle LED
-          digitalWrite(LED, ledState);                 // repeat toggling
+        } else{
+          digitalWrite(LED, LOW);
         }
       }
+
+      else if (toneStep == 3 && currentMillis - prevMillis >= 200) {   //millis calculate
+        if(Sound){
+          noTone(Buzzer);   // end
+          toneStep = 1;
+        } else{
+          digitalWrite(LED, HIGH);
+        }
+      }
+
     }
+    digitalWrite(LED, HIGH);
+    noTone(Buzzer);
   }
   delay(10);
 }
