@@ -53,9 +53,9 @@ unsigned long prevMillis = 0;  // last time when LED changed
 /* ==== OBJECTS ==== */
 DGP_Fields fields;  // fields info
 DGP_Servo servo(SERVO_L, SENSOR_L,
-                SERVO_R, SENSOR_R);     // for band winding
-DGP_Gyro gyro(GYRO_SDA, GYRO_SCL);      // for gyro sensing
-SoftwareSerial btSerial(BT_TX, BT_RX);  // software serial for bluetooth
+                SERVO_R, SENSOR_R);       // for band winding
+DGP_Gyro gyro(GYRO_SDA, GYRO_SCL, 1.50);  // for gyro sensing
+SoftwareSerial btSerial(BT_TX, BT_RX);    // software serial for bluetooth
 
 void setup() {
   if (devMod) Serial.begin(9600);  // for debug: serial start
