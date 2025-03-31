@@ -44,13 +44,13 @@ class DGP_Gyro{
         DGP_Gyro(uint8_t d, uint8_t c, float t = 0.15);
         ~DGP_Gyro(){;}
 
-        void init();
+        void init(boolean dev = false);
         int16_t getX(){ return calc_x; }
         int16_t getY(){ return calc_y; }
         boolean getCali(){ return isCompCali; }
-        void calibration();                     // calibration and set cali_x, cali_y
-        void disableCali();                     // disable calibration
-        boolean compareValue();                 // compare cali and calc
+        void calibration(boolean dev = false);      // calibration and set cali_x, cali_y
+        void disableCali();                         // disable calibration
+        boolean compareValue(boolean dev = false);  // compare cali and calc
         void printSerialCali();
 };
 
@@ -60,9 +60,13 @@ DGP_Gyro::DGP_Gyro(uint8_t d, uint8_t c, float t = 0.95){
     thRef = t;
 }
 
-void DGP_Gyro::init(){
+void DGP_Gyro::init(boolean dev = false){
     Wire.begin();       // wire communication start
     gyro.initialize();  // gyro module init
+    if(dev) Serial.println((gyro.testConnection())? 
+                        "==== GYRO CONNECTED! ====":
+                        "==== GYRO FAILED ====");
+
 
     delay(1000);        // connection wait
     
@@ -91,9 +95,12 @@ void DGP_Gyro::refresh(){                               // refresh value
     return;
 }
 
-void DGP_Gyro::calibration(){                           // calibration and set cali_x, calc_y
+void DGP_Gyro::calibration(boolean dev = false){                           // calibration and set cali_x, calc_y
     int16_t stackX = 0;
     int16_t stackY = 0;
+
+
+    if(dev) Serial.println("==== BEGIN CALI ====");
 
     for(uint8_t i = 0; i < CALI_SAMPLES; i++){
         refresh();                                      // refresh calc_x, calc_y
@@ -107,6 +114,8 @@ void DGP_Gyro::calibration(){                           // calibration and set c
     thhold_y = cali_y * thRef;                          // set threshold
 
     isCompCali = true;
+
+    if(dev) Serial.println("==== END OF CALI ====");
 
     return;
 }
@@ -124,8 +133,13 @@ void DGP_Gyro::disableCali(){
     return;
 }
 
-boolean DGP_Gyro::compareValue(){                                       // check posture, if good = true
+boolean DGP_Gyro::compareValue(boolean dev = false){                                       // check posture, if good = true
     refresh();
+
+    if(dev){
+        Serial.print("+cali_x:"); Serial.print(cali_x+thhold_x); Serial.print(",calc_x:"); Serial.print(calc_x); Serial.print(",-cali_x:"); Serial.println(cali_x-thhold_x);
+        Serial.print("+cali_y:"); Serial.print(cali_y+thhold_y); Serial.print(",calc_y:"); Serial.print(calc_y); Serial.print(",-cali_y:"); Serial.println(cali_y-thhold_y);
+    }
     if (calc_x > cali_x+thhold_x || calc_y > cali_y+thhold_y
         || calc_x < cali_x-thhold_x || calc_y < cali_y-thhold_y) {         // bad state
             outCount++; 
