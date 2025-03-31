@@ -24,7 +24,9 @@
 
 #define TIME_OUT    500    // timeout ref
 
-#define SERVO_STP   90      // servo stop
+#define SERVO_STP       90      // servo stop
+#define SERVO_HLD_L     75      // servo hold
+#define SERVO_HLD_R     105 
 
 class DGP_Servo {
     private:
@@ -234,6 +236,9 @@ void DGP_Servo::winding(){                  // winding
                 R_TO = true;
         }
     }
+
+    servo[L].write(SERVO_HLD_L);
+    servo[R].write(SERVO_HLD_R);
 }
 
 void DGP_Servo::unwinding(){                        // unwinding
