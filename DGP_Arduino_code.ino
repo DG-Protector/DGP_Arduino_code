@@ -25,7 +25,6 @@
 #define SERVO_L 10
 #define SERVO_R 11  // SERVO's PIN
 
-#define GYRO_INT 4
 #define GYRO_SCL A4
 #define GYRO_SDA A5  // MPU6050's PIN
 
