@@ -63,7 +63,8 @@ void setup() {
   servo.init();
   servo.setMaleRef(M_speeds);     // set male's motor power reference
   servo.setFemaleRef(FM_speeds);  // set female's motor power reference
-  gyro.init();                    // initializing gyro
+  if (devMod) servo.printSerialRefs();
+  gyro.init(true);                // initializing gyro
 }
 
 void loop() {
@@ -77,16 +78,19 @@ void loop() {
       case 'S':                                 // 'S' is Slience
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  // for debug
+        if (devMod) Serial.println("==== ACTIVE LED ====");
         Sound = false;                          // Sound off
         break;
 
       case 'B':                                 // 'B' is Buzzer
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  //for debug
+        if (devMod) Serial.println("==== ACTIVE BUZZER ====");
         Sound = true;                           // Sound on
         break;
 
       case 'e':             // 'e' is unwind
+        if (devMod) Serial.println("==== UNWIND ====");
         servo.unwinding();  // just unwind
         gyro.disableCali();
         if (devMod) digitalWrite(13, HIGH);  // for debug
@@ -103,9 +107,9 @@ void loop() {
 
         servo.unwinding();                   // unwind before wind
         servo.winding();                     // wind
-        gyro.calibration();                  // calibration
-        if (devMod) gyro.printSerialCali();  // for debug: display gyro
         if (devMod) digitalWrite(13, HIGH);  // for debug
+        gyro.calibration(true);               // calibration
+        if (devMod) gyro.printSerialCali();   // for debug: display gyro
         break;
     }
   }
