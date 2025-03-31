@@ -12,6 +12,7 @@
 //#include "library\DGP_Gyro.h"
 
 #include <SoftwareSerial.h>
+#include <EEPROM.h>
 #include "library\DGP.h"
 
 /* ==== MACROS ==== */
@@ -33,6 +34,7 @@
 #define LED 13      // HIGH = OFF
 
 // etc.
+#define IDX_MODE 0  // index of mode state
 
 /* ==== CONSTANT VALUE ==== */
 const long interval = 200;  // LED interval time setting
@@ -44,9 +46,9 @@ uint8_t FM_speeds[2][3] = { { 100, 120, 140 },  // [0][n] for ClockWise
                                                 // low, mid,  high
 bool devMod = true;                             // toggle debug mode, if false = off
 
-bool Sound = true;  // toggle Sound mode, if true buzzer on, if false led on, default mode is Sound
+bool soundMode = true;  // toggle Sound mode, if true buzzer on, if false led on, default mode is Sound
 bool ledState = HIGH;
-int toneStep = 0;   // trace every count of sound
+int toneStep = 0;       // trace every count of sound
 
 unsigned long prevMillis = 0;  // last time when LED changed
 
@@ -71,6 +73,7 @@ void setup() {
   pinMode(LED, OUTPUT);
   digitalWrite(LED, ledState);        // led pin setting
 
+  soundMode = EEPROM.read(IDX_MODE);  // initial read mode state
 }
 
 void loop() {
@@ -84,12 +87,14 @@ void loop() {
       case 's':
       case 'S':                                   // 'S' is mode indicator of silence
         if (devMod) Serial.println("==== ACTIVE LED ====");
-        Sound = false;                          // Sound off
+        soundMode = false;                        // toggle
+        EEPROM.write(IDX_MODE, soundMode);        // save state to EEPROM
         break;
       case 'b':
       case 'B':                                   // 'B' is mode indicator of buzzer
         if (devMod) Serial.println("==== ACTIVE BUZZER ====");
-        Sound = true;                           // Sound on
+        soundMode = true;                         // toggle
+        EEPROM.write(IDX_MODE, soundMode);        // save state to EEPROM
         break;
       case 'e':
       case 'E':                                   // 'e' is unwind band
@@ -118,9 +123,9 @@ void loop() {
   while (!gyro.checkPosture(true)) {          // check users posture, param is debug mode(true == on)
       unsigned long currentMillis = millis();
 
-      if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate  
-        if(Sound){    
-          tone(Buzzer, 1000);  // first sound
+      if (toneStep == 0 && currentMillis - prevMillis >= 0) {   //millis calculate
+        if(soundMode){                    // ON
+          tone(Buzzer, 1000);
           prevMillis = currentMillis;
           toneStep = 1;
         } else{
@@ -128,9 +133,9 @@ void loop() {
         }
       }
 
-      else if (toneStep == 1 && currentMillis - prevMillis >= 150) {  //millis calculate   
-        if(Sound){
-          noTone(Buzzer);  // waiting
+      else if (toneStep == 1 && currentMillis - prevMillis >= 100) {  //millis calculate   
+        if(soundMode){                    // OFF
+          noTone(Buzzer);
           prevMillis = currentMillis;
           toneStep = 2;
         } else{
@@ -138,9 +143,9 @@ void loop() {
         }
       }
 
-      else if (toneStep == 2 && currentMillis - prevMillis >= 50) {   //millis calculate
-        if(Sound){
-          tone(Buzzer, 1300);  // second sound
+      else if (toneStep == 2 && currentMillis - prevMillis >= 150) {   //millis calculate
+        if(soundMode){                    // OFF
+          tone(Buzzer, 1300);
           prevMillis = currentMillis;
           toneStep = 3;
         } else{
@@ -149,8 +154,8 @@ void loop() {
       }
 
       else if (toneStep == 3 && currentMillis - prevMillis >= 200) {   //millis calculate
-        if(Sound){
-          noTone(Buzzer);   // end
+        if(soundMode){                    // ON
+          noTone(Buzzer);
           toneStep = 1;
         } else{
           digitalWrite(LED, HIGH);
