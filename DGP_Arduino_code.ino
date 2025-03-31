@@ -78,6 +78,7 @@ void loop() {
     char cmd = bufStr.charAt(0);
 
     switch (cmd) {
+      case 's':
       case 'S':                                 // 'S' is Slience
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  // for debug
@@ -85,6 +86,7 @@ void loop() {
         Sound = false;                          // Sound off
         break;
 
+      case 'b':
       case 'B':                                 // 'B' is Buzzer
         fields.extractField(bufStr);            // extract fields from string
         if (devMod) fields.printSerialField();  //for debug
