@@ -15,7 +15,7 @@
 #include <MPU6050.h>
 
 #define CALC_SAMPLES 10
-#define CALI_SAMPLES 20
+#define CALI_SAMPLES 30
 
 class DGP_Gyro{
     private:
