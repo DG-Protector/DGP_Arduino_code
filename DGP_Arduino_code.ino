@@ -80,29 +80,21 @@ void loop() {
     switch (cmd) {
       case 's':
       case 'S':                                 // 'S' is Slience
-        fields.extractField(bufStr);            // extract fields from string
-        if (devMod) fields.printSerialField();  // for debug
         if (devMod) Serial.println("==== ACTIVE LED ====");
         Sound = false;                          // Sound off
         break;
-
       case 'b':
       case 'B':                                 // 'B' is Buzzer
-        fields.extractField(bufStr);            // extract fields from string
-        if (devMod) fields.printSerialField();  //for debug
         if (devMod) Serial.println("==== ACTIVE BUZZER ====");
         Sound = true;                           // Sound on
         break;
-
       case 'e':             // 'e' is unwind
         if (devMod) Serial.println("==== UNWIND ====");
         servo.unwinding();  // just unwind
         gyro.disableCali();
-        if (devMod) digitalWrite(13, HIGH);  // for debug
         break;
 
       default:
-        // 기본 처리 (기존 코드 유지)
         fields.extractField(bufStr);  // extract fields from string
         if (devMod) fields.printSerialField();
         servo.setUser(fields.getOp(),
