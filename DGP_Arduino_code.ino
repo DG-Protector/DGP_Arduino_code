@@ -30,7 +30,7 @@
 
 #define Buzzer 8
 
-#define LED 9
+#define LED 13      // HIGH = OFF
 
 // etc.
 
@@ -45,7 +45,7 @@ uint8_t FM_speeds[2][3] = { { 100, 120, 140 },  // [0][n] for ClockWise
 bool devMod = true;                             // toggle debug mode, if false = off
 
 bool Sound = true;  // toggle Sound mode, if true buzzer on, if false led on, default mode is Sound
-bool ledState = LOW;
+bool ledState = HIGH;
 int toneStep = 0;   // trace every count of sound
 
 unsigned long prevMillis = 0;  // last time when LED changed
@@ -65,6 +65,9 @@ void setup() {
   servo.setFemaleRef(FM_speeds);  // set female's motor power reference
   if (devMod) servo.printSerialRefs();
   gyro.init(true);                // initializing gyro
+
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, ledState);
 }
 
 void loop() {
