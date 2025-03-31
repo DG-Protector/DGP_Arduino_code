@@ -17,7 +17,7 @@
 /* ==== MACROS ==== */
 // pin number
 #define BT_RX 2
-#define BT_TX 3  // HC-06's PIN
+#define BT_TX 3     // HC-06's PIN
 
 #define SENSOR_L 5
 #define SENSOR_R 6  // SENSOR's PIN
@@ -26,7 +26,7 @@
 #define SERVO_R 11  // SERVO's PIN
 
 #define GYRO_SCL A4
-#define GYRO_SDA A5  // MPU6050's PIN
+#define GYRO_SDA A5 // MPU6050's PIN
 
 #define Buzzer 8
 
@@ -58,16 +58,19 @@ DGP_Gyro gyro(GYRO_SDA, GYRO_SCL, 1.50);  // for gyro sensing
 SoftwareSerial btSerial(BT_TX, BT_RX);    // software serial for bluetooth
 
 void setup() {
-  if (devMod) Serial.begin(9600);  // for debug: serial start
-  btSerial.begin(9600);            // bluetooth comm start
+  if (devMod) Serial.begin(9600);     // for debug: serial start
+  btSerial.begin(9600);               // bluetooth comm start
+
   servo.init();
-  servo.setMaleRef(M_speeds);     // set male's motor power reference
-  servo.setFemaleRef(FM_speeds);  // set female's motor power reference
+  servo.setMaleRef(M_speeds);         // set male's motor power reference
+  servo.setFemaleRef(FM_speeds);      // set female's motor power reference
   if (devMod) servo.printSerialRefs();
-  gyro.init(true);                // initializing gyro
+
+  gyro.init(true);                    // initializing gyro
 
   pinMode(LED, OUTPUT);
-  digitalWrite(LED, ledState);
+  digitalWrite(LED, ledState);        // led pin setting
+
 }
 
 void loop() {
@@ -79,33 +82,34 @@ void loop() {
 
     switch (cmd) {
       case 's':
-      case 'S':                                 // 'S' is Slience
+      case 'S':                                   // 'S' is mode indicator of silence
         if (devMod) Serial.println("==== ACTIVE LED ====");
         Sound = false;                          // Sound off
         break;
       case 'b':
-      case 'B':                                 // 'B' is Buzzer
+      case 'B':                                   // 'B' is mode indicator of buzzer
         if (devMod) Serial.println("==== ACTIVE BUZZER ====");
         Sound = true;                           // Sound on
         break;
-      case 'e':             // 'e' is unwind
+      case 'e':
+      case 'E':                                   // 'e' is unwind band
         if (devMod) Serial.println("==== UNWIND ====");
-        servo.unwinding();  // just unwind
-        gyro.disableCali();
+        servo.unwinding();                        // just unwind
+        gyro.disableCali();                       // disable calibration data
         break;
 
       default:
-        fields.extractField(bufStr);  // extract fields from string
+        fields.extractField(bufStr);              // extract fields from string
         if (devMod) fields.printSerialField();
-        servo.setUser(fields.getOp(),
+        servo.setUser(fields.getOp(),             // set user via fields
                       fields.getPL(),
-                      fields.getPR());           // set user's mode
-        if (devMod) servo.printSerialUsrInfo();  // for debug: display info
+                      fields.getPR());            // set user's mode
+        if (devMod) servo.printSerialUsrInfo();   // for debug: display info
 
-        servo.unwinding();                    // unwind before wind
-        servo.winding();                      // wind
-        gyro.calibration(true);               // calibration
-        if (devMod) gyro.printSerialCali();   // for debug: display gyro
+        servo.unwinding();                        // unwind before wind
+        servo.winding();                          // wind band
+        gyro.calibration(true);                   // calibration, param is debug mode(true == on)
+        if (devMod) gyro.printSerialCali();       // for debug: display gyro
         break;
     }
   }
@@ -154,7 +158,7 @@ void loop() {
       }
 
     }
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);          // OFF indicators
     noTone(Buzzer);
   }
   delay(10);
