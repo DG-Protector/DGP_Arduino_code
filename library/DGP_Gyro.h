@@ -34,6 +34,8 @@ class DGP_Gyro{
         int16_t cali_x;
         int16_t cali_y;             // calibration value
 
+        uint8_t outCount = 0;
+
         boolean isCompCali = false; //check for cali
 
         void refresh();             // re-calculate x, y
@@ -124,13 +126,18 @@ void DGP_Gyro::disableCali(){
 
 boolean DGP_Gyro::compareValue(){                                       // check posture, if good = true
     refresh();
-    if (calc_x > calc_x+thhold_x || calc_y > calc_y+thhold_y) {         // bad state
-        return false;
-    } else if (calc_x < calc_x-thhold_x || calc_y < calc_y-thhold_y) {  // bad state
-        return false;
-    } 
+    if (calc_x > cali_x+thhold_x || calc_y > cali_y+thhold_y
+        || calc_x < cali_x-thhold_x || calc_y < cali_y-thhold_y) {         // bad state
+            outCount++; 
+    }
     else {
+        outCount = 0;
         return true;
+    }
+
+    if(outCount > 10){
+        outCount = 0;
+        return false;
     }
 
     return true;
