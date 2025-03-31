@@ -74,7 +74,6 @@ DGP_Servo::DGP_Servo(   uint8_t l_servo_pin, uint8_t l_sensor_pin,      // initi
     servo_pin[R] = r_servo_pin;
     sensor[L] = l_sensor_pin;
     sensor[R] = r_sensor_pin;
-    
 }
 
 void DGP_Servo::init(){
@@ -86,6 +85,8 @@ void DGP_Servo::init(){
 
     pinMode(sensor[L], INPUT);
     pinMode(sensor[R], INPUT);
+
+    return;
 }
 
 void DGP_Servo::setMaleRef(uint8_t arr[2][3]){      // set male's motor power reference
@@ -168,7 +169,6 @@ boolean DGP_Servo::getSensorValue(uint8_t pin){     // read senser's sensing val
     }
 
     return t0;
-    
 }
 
 boolean DGP_Servo::rotateUntilFindPoint(boolean d, boolean c){  // rotate until find of point
@@ -182,9 +182,9 @@ boolean DGP_Servo::rotateUntilFindPoint(boolean d, boolean c){  // rotate until 
                 servo[d].write(SERVO_STP);  // stop servo
                 return false;               // fail
             }
-        }   
+        }
     }
-    servo[d].write(SERVO_STP);              // stop servo
+    //servo[d].write(SERVO_STP);            // stop servo
     return true;                            // no time out? success
 }
 
@@ -199,15 +199,17 @@ boolean DGP_Servo::rotateUntilOutPoint(boolean d, boolean c){   // rotate until 
                 servo[d].write(SERVO_STP);  // stop servo
                 return false;               // fail
             }
-        } 
+        }
     }
-    //servo[d].write(SERVO_STP);              // stop servo
+    //servo[d].write(SERVO_STP);            // stop servo
     return true;                            // no time out? success
 }
 
 void DGP_Servo::findPointOfRef(){           // find point of reference
     rotateUntilFindPoint(L, CW);
     rotateUntilFindPoint(R, CCW);
+
+    return;
 }
 
 boolean DGP_Servo::rotateOneStep(boolean d, boolean c){    // find point of reference
@@ -221,24 +223,27 @@ boolean DGP_Servo::rotateOneStep(boolean d, boolean c){    // find point of refe
 void DGP_Servo::winding(){                  // winding
     findPointOfRef();
 
-    boolean L_TO = false, R_TO = false;     // check time out 
+    boolean L_TO = false, R_TO = false;     // check time out
     while ((!L_TO || !R_TO)){               // repeat until if a timeout occurs L & R
         if(!L_TO){                          // rotate if not occurred time out
             if(rotateOneStep(L, CCW))       // wind
-                howManyWind[L]++;           // count 
-            else                            // if occurred time out?
+                howManyWind[L]++;           // count
+            else{                           // if occurred time out?
                 L_TO = true;                // set
+                servo[L].write(SERVO_HLD_L);// then hold tight
+            }
         }
         if(!R_TO){
             if(rotateOneStep(R, CW))
                 howManyWind[R]++;
-            else
+            else{
                 R_TO = true;
+                servo[R].write(SERVO_HLD_R);
+            }
         }
     }
 
-    servo[L].write(SERVO_HLD_L);
-    servo[R].write(SERVO_HLD_R);
+    return;
 }
 
 void DGP_Servo::unwinding(){                        // unwinding
@@ -253,7 +258,9 @@ void DGP_Servo::unwinding(){                        // unwinding
     }
 
     servo[L].write(SERVO_STP);
-    servo[R].write(SERVO_STP);
+    servo[R].write(SERVO_STP);                              // motors off
+
+    return;
 }
 
 void DGP_Servo::printSerialRefs(){                  // for debug
@@ -267,7 +274,7 @@ void DGP_Servo::printSerialRefs(){                  // for debug
     Serial.println("[femalesPower CCW]");
     Serial.print(femalesPower[CCW][L]); Serial.print(','); Serial.print(femalesPower[CCW][M]); Serial.print(','); Serial.println(femalesPower[CCW][H]);
     Serial.println("==== END ====");
-        
+
     return;
 }
 
@@ -283,7 +290,7 @@ void DGP_Servo::printSerialUsrInfo(){               // for debug
         Serial.print(usrPowerArr[0][CW]); Serial.print(','); Serial.println(usrPowerArr[0][CCW]);
     }
     Serial.println("==== END ====");
-        
+
     return;
 }
 
