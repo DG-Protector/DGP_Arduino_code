@@ -27,7 +27,7 @@ class DGP_Gyro{
 
         uint8_t sda_pin;
         uint8_t scl_pin;
-        
+
         int16_t calc_x;
         int16_t calc_y;             // calculated value
 
@@ -39,7 +39,7 @@ class DGP_Gyro{
         boolean isCompCali = false; //check for cali
 
         void refresh();             // re-calculate x, y
-    public: 
+    public:
         DGP_Gyro(){;}
         DGP_Gyro(uint8_t d, uint8_t c, float t = 0.15);
         ~DGP_Gyro(){;}
@@ -50,7 +50,7 @@ class DGP_Gyro{
         boolean getCali(){ return isCompCali; }
         void calibration(boolean dev = false);      // calibration and set cali_x, cali_y
         void disableCali();                         // disable calibration
-        boolean compareValue(boolean dev = false);  // compare cali and calc
+        boolean checkPosture(boolean dev = false);  // compare cali and calc
         void printSerialCali();
 };
 
@@ -135,7 +135,7 @@ void DGP_Gyro::disableCali(){
     return;
 }
 
-boolean DGP_Gyro::compareValue(boolean dev = false){                                       // check posture, if good = true
+boolean DGP_Gyro::checkPosture(boolean dev = false){                                       // check posture, if good = true
     refresh();
 
     if(dev){

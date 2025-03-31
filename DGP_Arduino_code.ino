@@ -110,8 +110,8 @@ void loop() {
     }
   }
 
-  if (gyro.getCali()) {  // if already calibration?
-    while (!gyro.compareValue(true)) {
+  if (gyro.getCali()) {                       // if already calibration?
+  while (!gyro.checkPosture(true)) {          // check users posture, param is debug mode(true == on)
       unsigned long currentMillis = millis();
 
       if (toneStep == 0 && currentMillis - prevMillis >= 0) {         //millis calculate  
