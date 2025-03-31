@@ -77,9 +77,9 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available()) {                // if the data came in via bluetooth
+  if (btSerial.available()) {                // if the data came in via bluetooth
     String bufStr = "";                    // initialize buffer string
-    bufStr = Serial.readStringUntil('.');  // read chars until came '.'(eof)
+    bufStr = btSerial.readStringUntil('.');  // read chars until came '.'(eof)
 
     char cmd = bufStr.charAt(0);
 
